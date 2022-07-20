@@ -2,6 +2,9 @@
 const express = require('express');
 const app = express();
 
+// Redis
+const { redisSet, redisGet } = require('./useRedis');
+
 // Middleware
 app.use(express.json());
 
@@ -17,9 +20,13 @@ const getJson = (req, res) => {
   res.status(200).json(testJson);
 };
 
-const createJson = (req, res) => {
+const setJson = (req, res) => {
   const body = req.body;
+  const key = Object.keys(body)[0];
+  const value = body[key];
+  redisSet(key, value);
   console.log(body);
+  console.log({ key }, { value });
   res.json({
     status: 'success',
     data: req.body,
@@ -29,4 +36,4 @@ const createJson = (req, res) => {
 app //
   .route('/api/v1/json')
   .get(getJson)
-  .post(createJson);
+  .post(setJson);
