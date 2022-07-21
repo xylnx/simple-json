@@ -5,6 +5,10 @@ const app = express();
 // Redis
 const { redisSet, redisGet } = require('./useRedis');
 
+// Helpers
+// DOMPurify => clean incoming stings
+const { cleanData } = require('./cleanData');
+
 // Middleware
 app.use(express.json());
 
@@ -13,8 +17,6 @@ const port = 3001;
 app.listen(port, () => {
   console.log(`Simple JSON is running on port ${port}.`);
 });
-
-const testJson = { msg: 'bonjour, bruv' };
 
 const getJson = async (req, res) => {
   const key = req.params['key'];
@@ -30,12 +32,10 @@ const getJson = async (req, res) => {
 const setJson = (req, res) => {
   const key = req.params['key'];
   const body = req.body;
-  console.log(key, ':', body);
   const value = JSON.stringify(body);
-  // const key = Object.keys(body)[0];
-  // const value = body[key];
+  const cleanedVal = cleanData(value);
 
-  redisSet(key, value);
+  redisSet(key, cleanedVal);
 
   res.json({
     status: 'success',
