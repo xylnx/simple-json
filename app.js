@@ -16,17 +16,27 @@ app.listen(port, () => {
 
 const testJson = { msg: 'bonjour, bruv' };
 
-const getJson = (req, res) => {
-  res.status(200).json(testJson);
+const getJson = async (req, res) => {
+  const key = req.params['key'];
+  const data = await redisGet(key);
+  const json = JSON.parse(data);
+
+  res.status(200).json({
+    status: 'success',
+    data: json,
+  });
 };
 
 const setJson = (req, res) => {
+  const key = req.params['key'];
   const body = req.body;
-  const key = Object.keys(body)[0];
-  const value = body[key];
+  console.log(key, ':', body);
+  const value = JSON.stringify(body);
+  // const key = Object.keys(body)[0];
+  // const value = body[key];
+
   redisSet(key, value);
-  console.log(body);
-  console.log({ key }, { value });
+
   res.json({
     status: 'success',
     data: req.body,
@@ -34,6 +44,6 @@ const setJson = (req, res) => {
 };
 
 app //
-  .route('/api/v1/json')
-  .get(getJson)
-  .post(setJson);
+  .route('/api/v1/json/:key')
+  .post(setJson)
+  .get(getJson);
