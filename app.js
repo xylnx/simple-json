@@ -2,6 +2,9 @@
 const express = require('express');
 const app = express();
 
+// Cors
+const cors = require('cors');
+
 // Redis
 const { redisSet, redisGet } = require('./useRedis');
 
@@ -9,11 +12,21 @@ const { redisSet, redisGet } = require('./useRedis');
 // DOMPurify => clean incoming stings
 const { cleanData } = require('./cleanData');
 
+/* ++++++++++++++++++++++++++++++ */
+
 // Middleware
+app.use(cors());
 app.use(express.json());
 
+/* ++++++++++++++++++++++++++++++ */
+
 // Start server
-const port = 3001;
+
+const devPort = 3001;
+// Use PORT env var on the server
+// Use `devPort` locally
+const port = process.env.PORT || devPort;
+
 app.listen(port, () => {
   console.log(`Simple JSON is running on port ${port}.`);
 });
