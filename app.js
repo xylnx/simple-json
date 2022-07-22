@@ -34,8 +34,23 @@ app.listen(port, () => {
 const getJson = async (req, res) => {
   const key = req.params['key'];
   const data = await redisGet(key);
-  const json = JSON.parse(data);
+  let json;
 
+  // Check data
+  if (!data) return;
+  try {
+    json = JSON.parse(data);
+  } catch (err) {
+    console.log(err.message);
+    res.status(400).json({
+      status: 'error',
+      error: err.message,
+      data: data,
+    });
+    return;
+  }
+
+  // Send back data
   res.status(200).json({
     status: 'success',
     data: json,
@@ -48,9 +63,17 @@ const setJson = (req, res) => {
   const value = JSON.stringify(body);
   const cleanedVal = cleanData(value);
 
-  redisSet(key, cleanedVal);
+  try {
+    redisSet(key, cleanedVal);
+  } catch (err) {
+    res.status(400).json({
+      status: 'error, could not write to DB',
+      error: err,
+      data: req.body,
+    });
+  }
 
-  res.json({
+  res.status(200).json({
     status: 'success',
     data: req.body,
   });
