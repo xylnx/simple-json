@@ -8,6 +8,11 @@ const cors = require('cors');
 // Redis
 const { redisSet, redisGet } = require('./useRedis');
 
+// verfiy JWT => custom middleware to check access rights
+const verfiyJWT = require('./middleware/verifyJWT');
+
+const cookieParser = require('cookie-parser');
+
 // Helpers
 // DOMPurify => clean incoming stings
 const { cleanData } = require('./cleanData');
@@ -17,6 +22,7 @@ const { cleanData } = require('./cleanData');
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 /* ++++++++++++++++++++++++++++++ */
 
@@ -79,7 +85,21 @@ const setJson = (req, res) => {
   });
 };
 
+const registerController = require('./controllers/registerController');
+app.post('/api/v1/register', registerController.handleNewUser);
+
+const authController = require('./controllers/authController');
+app.post('/api/v1/auth', authController.handleLogin);
+
+const refreshTokenController = require('./controllers/refreshTokenController');
+app.get('/api/v1/refresh', refreshTokenController.handleRefreshToken);
+
+// Apply middleware only to the routes below,
+// here: protecting routes using JWT
+app.use(verfiyJWT);
+
 app //
   .route('/api/v1/json/:key')
   .post(setJson)
   .get(getJson);
+// .get(verfiyJWT, getJson); // apply middleware only to one route
