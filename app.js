@@ -94,6 +94,9 @@ app.post('/api/v1/auth', authController.handleLogin);
 const refreshTokenController = require('./controllers/refreshTokenController');
 app.get('/api/v1/refresh', refreshTokenController.handleRefreshToken);
 
+const logoutController = require('./controllers/logoutController');
+app.get('/api/v1/logout', logoutController.handleLogout);
+
 // Apply middleware only to the routes below,
 // here: protecting routes using JWT
 app.use(verfiyJWT);
