@@ -3,7 +3,9 @@ const express = require('express');
 const app = express();
 
 // Cors
+const credentials = require('./middleware/credentials');
 const cors = require('cors');
+const corsOptions = require('./config/corsOptions');
 
 // Redis
 const { redisSet, redisGet } = require('./useRedis');
@@ -20,7 +22,8 @@ const { cleanData } = require('./cleanData');
 /* ++++++++++++++++++++++++++++++ */
 
 // Middleware
-app.use(cors());
+app.use(credentials);
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
