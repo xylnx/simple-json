@@ -60,6 +60,8 @@ const handleLogin = async (req, res) => {
     // maxAge is in millisconds => one day is what we have here (24 * 60 * 60 * 1000)
     res.cookie('jwt', refreshToken, {
       httpOnly: true,
+      sameSite: 'None',
+      secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
     res.json({
