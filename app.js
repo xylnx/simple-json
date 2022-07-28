@@ -7,13 +7,13 @@ const credentials = require('./middleware/credentials');
 const cors = require('cors');
 const corsOptions = require('./config/corsOptions');
 
-// Redis
-const { redisSet, redisGet } = require('./useRedis');
-
+// Authentication
 // verfiy JWT => custom middleware to check access rights
 const verfiyJWT = require('./middleware/verifyJWT');
-
 const cookieParser = require('cookie-parser');
+
+// Redis
+const { redisSet, redisGet } = require('./useRedis');
 
 // Helpers
 // DOMPurify => clean incoming stings
