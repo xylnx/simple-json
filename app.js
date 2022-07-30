@@ -9,7 +9,7 @@ const corsOptions = require('./config/corsOptions');
 
 // Authentication
 // verfiy JWT => custom middleware to check access rights
-const verfiyJWT = require('./middleware/verifyJWT');
+const verifyJWT = require('./middleware/verifyJWT');
 const cookieParser = require('cookie-parser');
 
 // Redis
@@ -42,11 +42,18 @@ app.listen(port, () => {
 
 const getJson = async (req, res) => {
   const key = req.params['key'];
+
+  // console.log(req.params);
+  // console.log(key);
+
   const data = await redisGet(key);
-  let json;
+  console.log(data);
 
   // Check data
-  if (!data) return;
+  // No content here, you hit a non existing route
+  if (!data) return res.sendStatus(204);
+
+  let json;
   try {
     json = JSON.parse(data);
   } catch (err) {
@@ -102,10 +109,10 @@ app.get('/api/v1/logout', logoutController.handleLogout);
 
 // Apply middleware only to the routes below,
 // here: protecting routes using JWT
-app.use(verfiyJWT);
+//app.use(verfiyJWT);
 
 app //
   .route('/api/v1/json/:key')
   .post(setJson)
-  .get(getJson);
+  .get(verifyJWT, getJson);
 // .get(verfiyJWT, getJson); // apply middleware only to one route
