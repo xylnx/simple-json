@@ -3,7 +3,14 @@ const express = require('express');
 const app = express();
 
 // Cors
+const credentials = require('./middleware/credentials');
 const cors = require('cors');
+const corsOptions = require('./config/corsOptions');
+
+// Authentication
+// verfiy JWT => custom middleware to check access rights
+const verifyJWT = require('./middleware/verifyJWT');
+const cookieParser = require('cookie-parser');
 
 // Redis
 const { redisSet, redisGet } = require('./useRedis');
@@ -15,8 +22,10 @@ const { cleanData } = require('./cleanData');
 /* ++++++++++++++++++++++++++++++ */
 
 // Middleware
-app.use(cors());
+app.use(credentials);
+app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
 
 /* ++++++++++++++++++++++++++++++ */
 
@@ -33,11 +42,18 @@ app.listen(port, () => {
 
 const getJson = async (req, res) => {
   const key = req.params['key'];
+
+  // console.log(req.params);
+  // console.log(key);
+
   const data = await redisGet(key);
-  let json;
+  console.log(data);
 
   // Check data
-  if (!data) return;
+  // No content here, you hit a non existing route
+  if (!data) return res.sendStatus(204);
+
+  let json;
   try {
     json = JSON.parse(data);
   } catch (err) {
@@ -79,7 +95,24 @@ const setJson = (req, res) => {
   });
 };
 
+const registerController = require('./controllers/registerController');
+app.post('/api/v1/register', registerController.handleNewUser);
+
+const authController = require('./controllers/authController');
+app.post('/api/v1/auth', authController.handleLogin);
+
+const refreshTokenController = require('./controllers/refreshTokenController');
+app.get('/api/v1/refresh', refreshTokenController.handleRefreshToken);
+
+const logoutController = require('./controllers/logoutController');
+app.get('/api/v1/logout', logoutController.handleLogout);
+
+// Apply middleware only to the routes below,
+// here: protecting routes using JWT
+//app.use(verfiyJWT);
+
 app //
   .route('/api/v1/json/:key')
   .post(setJson)
-  .get(getJson);
+  .get(verifyJWT, getJson);
+// .get(verfiyJWT, getJson); // apply middleware only to one route
