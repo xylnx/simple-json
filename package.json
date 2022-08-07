@@ -4,7 +4,7 @@
   "description": "A simple json store for your app",
   "main": "app.js",
   "scripts": {
-    "test": "node test.js"
+    "start": "node app.js"
   },
   "keywords": [
     "json",
