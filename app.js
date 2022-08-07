@@ -95,8 +95,8 @@ const setJson = (req, res) => {
   });
 };
 
-const registerController = require('./controllers/registerController');
-app.post('/api/v1/register', registerController.handleNewUser);
+// const registerController = require('./controllers/registerController');
+// app.post('/api/v1/register', registerController.handleNewUser);
 
 const authController = require('./controllers/authController');
 app.post('/api/v1/auth', authController.handleLogin);
