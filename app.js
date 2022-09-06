@@ -29,6 +29,9 @@ app.use(cookieParser());
 
 /* ++++++++++++++++++++++++++++++ */
 
+// Set to true to log data
+const debug = true;
+
 // Start server
 
 const devPort = 3001;
@@ -42,17 +45,17 @@ app.listen(port, () => {
 
 const getJson = async (req, res) => {
   const key = req.params['key'];
+  if (debug) console.log('Request params:', req.params);
 
-  // console.log(req.params);
-  // console.log(key);
-
-  const data = await redisGet(key);
-  console.log(data);
+  let data = null;
+  data = await redisGet(key);
+  if (debug) console.log({ data });
 
   // Check data
   // No content here, you hit a non existing route
   if (!data) return res.sendStatus(204);
 
+  // Parse JSON from redis data
   let json;
   try {
     json = JSON.parse(data);
@@ -66,7 +69,7 @@ const getJson = async (req, res) => {
     return;
   }
 
-  // Send back data
+  // Send back JSON
   res.status(200).json({
     status: 'success',
     data: json,
