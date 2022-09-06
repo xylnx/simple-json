@@ -1,5 +1,7 @@
 const allowedOriginis = require('./allowedOrigins');
 
+// Check if origin is listed in the imported allowedOriginis array
+// Throw error if not
 const corsOptions = {
   origin: (origin, callback) => {
     console.log({ origin });
