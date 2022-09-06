@@ -4,7 +4,8 @@
   "description": "A simple json store for your app",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "keywords": [
     "json",
