@@ -120,6 +120,12 @@ app.get('/api/v1/logout', logoutController.handleLogout);
 // Apply middleware only to the routes below,
 // here: protecting routes using JWT
 //app.use(verfiyJWT);
+//
+
+// TEST ENDPOINT
+app.get('/api/v1/test', (req, res) => {
+  res.send('TEST FWL: SUCCESS!');
+});
 
 app //
   .route('/api/v1/json/:key')
